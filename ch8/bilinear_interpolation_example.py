@@ -17,8 +17,12 @@ def my_bilinear_interpolation(data, x, y):
         + (1-x+xLow)*(y-yLow)*data[yHight][xLow] \
         + (x-xLow)*(y-yLow)*data[yHight][xHight]
 
-def my_bicubic_interpolation(data, x, y):
-    return 0
+def my_1D_bicubic_interpolation(x, y, input):
+    c = (y[2]-y[0])/(x[2]-x[0])
+    d = y[0]
+    a = (y[3]-y[1])/(x[3]-x[1]) + c - 2*y[1] + 2*y[0]
+    b = 3*y[1] -2*c - 3*y[0] - (y[3]-y[1])/(x[3]-x[1])
+    return a*pow(input,3) + b* pow(input,2) + c* input +d
 
 # 創建一個簡單的2D數據
 x = np.arange(0, 4)
@@ -49,10 +53,14 @@ for j in range(len(new_y)):
         lui_new_data[j][i] = my_bilinear_interpolation(data, new_x[i], new_y[j])
 
 # my Bicubic Interpolation Method
-lui_new_data = np.zeros([len(new_x), len(new_y)])
-for j in range(len(new_y)):
-    for i in range(len(new_x)):
-        lui_new_data[j][i] = my_bicubic_interpolation(data, new_x[i], new_y[j])
+lui_x = np.array([0, 1, 2, 3])
+lui_y = np.array([1, 2, 0, 1])
+inputs = np.linspace(0,5,20)
+output = []
+for input in inputs:
+    output.append(my_1D_bicubic_interpolation(lui_x, lui_y, input))
+
+plt.plot(input, output)
 
 compare_answer = np.zeros([len(new_x), len(new_y)])
 for j in range(len(new_y)):
