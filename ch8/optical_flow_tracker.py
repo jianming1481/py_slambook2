@@ -78,7 +78,7 @@ class OpticalFlowTracker:
                 # compute cost and Jacobian
                 for x in range(-half_patch_size, half_patch_size):
                     for y in range(-half_patch_size, half_patch_size):
-                        error = GetPixelValue(img1, kp.pt[0] + x, kp.pt[1] + y) - GetPixelValue(img2, kp.pt[0] + x + dx,
+                        error = GetPixelValue(self.img1, kp.pt[0] + x, kp.pt[1] + y) - GetPixelValue(self.img2, kp.pt[0] + x + dx,
                                                                                                 kp.pt[
                                                                                                     1] + y + dy)  # Jacobian
                         if not self.inverse:
