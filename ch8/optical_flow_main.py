@@ -14,9 +14,19 @@ def main():
     else:
         print('No file exist')
 
-    gftt = cv2.GFTTDetector_create(maxCorners=500, qualityLevel=0.01, minDistance=20, blockSize=10, useHarrisDetector=False, k=0.1)
+    gftt = cv2.GFTTDetector_create(maxCorners=500, qualityLevel=0.01, minDistance=20)
+    # gftt = cv2.GFTTDetector_create(maxCorners=500, qualityLevel=0.01, minDistance=20, blockSize=10, useHarrisDetector=False, k=0.1)
 
     keypoint1 = gftt.detect(img1, None)
+
+    # # 繪製角點
+    # output_image = cv2.drawKeypoints(img1, keypoint1, None, color=(0, 255, 0))
+    #
+    # # 顯示圖像
+    # cv2.imshow('Detected Keypoints', output_image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
     kp2_single = []
     success_single = []
     kp2_single, success_single = OpticalFlowSingleLevel(img1, img2, keypoint1)
