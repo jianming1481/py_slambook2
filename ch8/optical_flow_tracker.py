@@ -68,7 +68,7 @@ class OpticalFlowTracker:
 
             cost = 0
             lastCost = 0
-            success = True  # indicate if this point succeeded
+            succ = True  # indicate if this point succeeded
             H = np.zeros((2, 2))  # Hessian
             b = np.zeros(2)  # bias
             J = np.zeros(2)
@@ -152,9 +152,12 @@ class OpticalFlowTracker:
                     # converge
                     break
 
-        success[i] = succ
-        # set kp2
-        self.kp2[i].pt = kp.pt + cv2.Point2f(dx, dy)
+            self.success[i] = succ
+            # set kp2
+            self.kp2[i].pt[0] = kp.pt[0] + dx
+            self.kp2[i].pt[1] = kp.pt[1] + dy
+
+        return self.success, self.kp2
 
     def get_keyPoint2(self):
         return self.kp2

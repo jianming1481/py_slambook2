@@ -9,6 +9,20 @@ import time
  single level optical flow
  return keypoint2: List[cv2.KeyPoint], success: List[bool]
 '''
+class MyPoint:
+    def __init__(self, x, y, size = 0):
+        self.pt = np.zeros(2)
+        self.pt[0] = x
+        self.pt[1] = y
+        self.size = size
+
+    def __setitem__(self, index, value):
+        if index == 0 or index == 1:
+            self.pt[index] = value
+        else:
+            raise IndexError("Invalid index")
+
+
 def OpticalFlowSingleLevel(
         img1: np.ndarray,
         img2: np.ndarray,
@@ -17,7 +31,7 @@ def OpticalFlowSingleLevel(
         has_initial_guess: bool = False) -> Tuple[List[cv2.KeyPoint], List[bool]]:
     kp2 = []
     for i in range(len(kp1)):
-        kp = cv2.KeyPoint(0, 0, 0)
+        kp = MyPoint(0,0)
         kp2.append(kp)
     success = []
     for i in range(len(kp1)):
@@ -30,10 +44,7 @@ def OpticalFlowSingleLevel(
     #   futures = [executor.submit(tracker.calculate_optical_flow, i) for i in range(len(kp1))]
     #   results = [future.result() for future in concurrent.futures.as_completed(futures)]
     myRange = [0, len(kp1)]
-    tracker.calculateOpticalFlow(myRange)
-    kp2 = tracker.get_keypoint2()
-    success = tracker.get_success()
-
+    success, kp2 = tracker.calculateOpticalFlow(myRange)
     return kp2, success
 
 '''
