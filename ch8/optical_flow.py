@@ -27,15 +27,21 @@ def OpticalFlowSingleLevel(
         img1: np.ndarray,
         img2: np.ndarray,
         kp1: List[cv2.KeyPoint],
+        kp2: List[MyPoint],
+        success: List[bool],
         inverse: bool = False,
         has_initial_guess: bool = False) -> Tuple[List[cv2.KeyPoint], List[bool]]:
-    kp2 = []
-    for i in range(len(kp1)):
-        kp = MyPoint(0,0)
-        kp2.append(kp)
-    success = []
-    for i in range(len(kp1)):
-        success.append(False)
+
+    if not has_initial_guess or len(kp2) == 0:
+        kp2 = []
+        for i in range(len(kp1)):
+            kp = MyPoint(0,0)
+            kp2.append(kp)
+
+    if len(success) == 0:
+        success = []
+        for i in range(len(kp1)):
+            success.append(False)
 
     tracker = OpticalFlowTracker(img1, img2, kp1, kp2, success, inverse, has_initial_guess)
 
@@ -56,8 +62,6 @@ def OpticalFlowMultiLevel(
         img1: np.ndarray,
         img2: np.ndarray,
         kp1: List[cv2.KeyPoint],
-        kp2: List[cv2.KeyPoint],
-        success: List[bool],
         inverse: bool = False, ) -> Tuple[List[cv2.KeyPoint], List[bool]]:
     print('OpticalFlowMultiLevel')
     # parameters
@@ -79,6 +83,12 @@ def OpticalFlowMultiLevel(
             new_width = int(pyr2[i - 1].shape[1] * pyramid_scale)
             new_height = int(pyr2[i - 1].shape[0] * pyramid_scale)
             img2_pyr = cv2.resize(pyr2[i - 1], (new_width, new_height))
+            # cv2.imshow('image1 pyramid', img1_pyr)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+            # cv2.imshow('image2 pyramid', img2_pyr)
+            # cv2.waitKey(0)
+            # cv2.destroyAllWindows()
             pyr1.append(img1_pyr)
             pyr2.append(img2_pyr)
     t2 = time.perf_counter()
@@ -87,15 +97,17 @@ def OpticalFlowMultiLevel(
     # coarse-to-fine LK tracking in pyramids
     kp1_pyr = []
     kp2_pyr = []
+    success = []
     for kp in kp1:
         kp_top = cv2.KeyPoint(kp.pt[0] * scales[pyramids - 1], kp.pt[1] * scales[pyramids - 1], kp.size)
         kp1_pyr.append(kp_top)
-        kp2_pyr.append(kp_top)
+        kp2_top = MyPoint(kp.pt[0] * scales[pyramids - 1],kp.pt[1] * scales[pyramids - 1], kp.size)
+        kp2_pyr.append(kp2_top)
+        success.append(False)
 
     for level in range(pyramids - 1, -1, -1):
-        success = []
         t1 = time.perf_counter()
-        kp2_pyr, success = OpticalFlowSingleLevel(pyr1[level], pyr2[level], kp1_pyr, inverse, True)
+        kp2_pyr, success = OpticalFlowSingleLevel(pyr1[level], pyr2[level], kp1_pyr, kp2_pyr, success, inverse, True)
         t2 = time.perf_counter()
         time_used = t2 - t1
         print('track pyr %d cost time %f' % (level, time_used))
@@ -111,7 +123,7 @@ def OpticalFlowMultiLevel(
                 kp_x = kp2_pyr[i].pt[0] / pyramid_scale
                 kp_y = kp2_pyr[i].pt[1] / pyramid_scale
                 kp_size = kp2_pyr[i].size
-                new_kp = cv2.KeyPoint(kp_x, kp_y, kp_size)
+                new_kp = MyPoint(kp_x, kp_y, kp_size)
                 kp2_pyr[i] = new_kp
 
     kp2 = []

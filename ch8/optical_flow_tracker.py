@@ -49,7 +49,7 @@ class OpticalFlowTracker:
         self.success = success
         self.inverse = inverse
         self.hasInit = hasInit
-        print('hello')
+        print('Start OpticalFlowTracker')
 
     def calculateOpticalFlow(self, myRange: List[int]):
         # print('calculate optical flow')
@@ -58,8 +58,8 @@ class OpticalFlowTracker:
         start, end = myRange
         for i in range(start, end):
             kp = self.kp1[i]
-            if kp.pt[0] == 742 and kp.pt[1] == 340:
-                print('stop here')
+            # if kp.pt[0] == 742 and kp.pt[1] == 340:
+            #     print('stop here')
             dx = 0.0
             dy = 0.0
             if self.hasInit:
@@ -115,11 +115,11 @@ class OpticalFlowTracker:
                             H += np.outer(J, J.transpose())
                 # Compute update
                 try:
-                    if kp.pt[0] == 742 and kp.pt[1] == 340:
-                        print('J: ', J)
-                        print('H: ', H)
-                        print('b: ', b)
-                        print('---------------------------------------')
+                    # if kp.pt[0] == 742 and kp.pt[1] == 340:
+                    #     print('J: ', J)
+                    #     print('H: ', H)
+                    #     print('b: ', b)
+                    #     print('---------------------------------------')
 
                     try:
                         update = np.linalg.solve(H, b)
