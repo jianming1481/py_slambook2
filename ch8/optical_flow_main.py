@@ -7,9 +7,13 @@ from optical_flow import OpticalFlowMultiLevel
 import time
 
 def main():
-    if os.path.exists('./LK1.png'):
-        image1_path = './LK1.png'
-        image2_path = './LK2.png'
+    # file1 = './LK1.png'
+    file1 = './000001.png'
+    # file2 = './LK2.png'
+    file2 = './000002.png'
+    if os.path.exists(file1):
+        image1_path = file1
+        image2_path = file2
         # images, note they are CV_8UC1, not CV_8UC3
         img1 = cv2.imread(image1_path, cv2.IMREAD_GRAYSCALE)
         img2 = cv2.imread(image2_path, cv2.IMREAD_GRAYSCALE)
