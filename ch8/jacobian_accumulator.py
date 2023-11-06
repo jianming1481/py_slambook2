@@ -1,4 +1,5 @@
 import numpy as np
+import sophus as sp
 
 class JacobianAccumulator:
     '''
@@ -15,6 +16,9 @@ class JacobianAccumulator:
         self.img2 = img2_
         self.px_ref = px_ref_
         self.depth_ref = depth_ref_
+        R_identity = sp.SO3()
+        t_zero = np.zeros((3,))
+        self.T21 = sp.SE3(R_identity.matrix(), t_zero)
         self.cost = 0.0
 
     # Set Camera intrinsics
@@ -36,7 +40,10 @@ class JacobianAccumulator:
 
         for i in range(rng.start, rng.stop):
             # compute the projection in the second image
-            point_ref = self.depth_ref[i]*[(self.px_ref[i][0]-self.cx)/self.fx, (self.px_ref[i][1]-self.cy)/self.fy, 1]
+            point_ref = list(map(lambda x: self.depth_ref[i] * x, [(self.px_ref[i][0]-self.cx)/self.fx,
+                                                                   (self.px_ref[i][1]-self.cy)/self.fy,
+                                                                   1]))
+            point_cur = self.T21 * point_ref;
 
     def hessian(self):
         self.H = np.zeros((6, 6))

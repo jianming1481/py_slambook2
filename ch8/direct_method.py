@@ -22,6 +22,8 @@ def DirectPoseEstimationSingleLayer(img1, img2, px_ref, depth_ref):
     for i in range(iterations):
         jaco_accu.reset()
         rng = slice(0, len(px_ref))
+
+        jaco_accu.set_camera_intrinsics(fx, fy, cx, cy, baseline)
         jaco_accu.accumulate_jacobian(rng)
         H = jaco_accu.hessian()
         b = jaco_accu.bias()
@@ -38,14 +40,16 @@ def main():
     disparity_img = cv2.imread(disparity_file, cv2.IMREAD_GRAYSCALE)
 
     # let's randomly pick pixels in the first image and generate some 3d points in the first image's frame
-    nPoint = 2000
+    nPoint = 100
     boarder = 20
     rows, columns = left_img.shape
     depth_ref = []
     pixels_ref = []
     for i in range(nPoint):
-        x = random.randint(boarder, columns-boarder) # don't pick pixels close to boarder
-        y = random.randint(boarder, rows-boarder) # don't pick pixels close to boarder
+        # x = random.randint(boarder, columns-boarder) # don't pick pixels close to boarder
+        # y = random.randint(boarder, rows-boarder) # don't pick pixels close to boarder
+        x = boarder + i
+        y = boarder + i
         disparity = disparity_img[y][x]
         global fx, fy, cx, cy, baseline
         depth = fx*baseline/disparity
@@ -57,6 +61,8 @@ def main():
         file_name = fmt_others.format(file_number)
         img = cv2.imread(file_name, cv2.IMREAD_GRAYSCALE)
         # DirectPoseEstimationSingleLayer(left_img, img, pixels_ref, depth_ref, T_cur_ref);
+        DirectPoseEstimationSingleLayer(left_img, img, pixels_ref, depth_ref);
+
 
 
 
